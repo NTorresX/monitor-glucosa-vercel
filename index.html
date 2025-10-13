@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monitor de Glucosa</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f2f5;
+        margin: 0;
+      }
+      .container {
+        text-align: center;
+        padding: 40px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+      }
+      .data {
+        font-size: 4em;
+        font-weight: bold;
+        color: #007bff;
+        margin: 20px 0;
+      }
+      .label {
+        font-size: 1.2em;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Nivel de Glucosa Actual</h1>
+      <div id="glucosa-valor" class="data">Cargando...</div>
+      <div class="label">mg/dL</div>
+      <p><small>Esta página se actualiza automáticamente.</small></p>
+    </div>
+
+    <script>
+      // Función para obtener y mostrar el dato
+      async function obtenerDato() {
+        try {
+          const response = await fetch("/api/obtener_dato");
+          const data = await response.json();
+          document.getElementById("glucosa-valor").textContent = data.glucosa;
+        } catch (error) {
+          console.error("Error al obtener el dato:", error);
+          document.getElementById("glucosa-valor").textContent = "Error";
+        }
+      }
+
+      // Llama a la función al cargar la página
+      obtenerDato();
+
+      // Actualiza el dato cada 15 segundos
+      setInterval(obtenerDato, 15000);
+    </script>
+  </body>
+</html>
