@@ -1,68 +1,125 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor de Glucosa</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f0f2f5;
-        margin: 0;
-      }
-      .container {
-        text-align: center;
-        padding: 40px;
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        color: #333;
-      }
-      .data {
-        font-size: 4em;
-        font-weight: bold;
-        color: #007bff;
-        margin: 20px 0;
-      }
-      .label {
-        font-size: 1.2em;
-        color: #666;
-      }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .container { text-align: center; padding: 20px 40px 40px 40px; background-color: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 90%; max-width: 600px; }
+        
+        /* Estilos para las pestañas */
+        .tab-nav { border-bottom: 1px solid #ccc; margin-bottom: 20px; }
+        .tab-button { background: none; border: none; padding: 15px 20px; cursor: pointer; font-size: 16px; color: #555; }
+        .tab-button.active { border-bottom: 3px solid #007bff; color: #007bff; font-weight: bold; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        h1 { color: #333; }
+        .data { font-size: 4em; font-weight: bold; color: #007bff; margin: 20px 0; }
+        .label { font-size: 1.2em; color: #666; }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <h1>Nivel de Glucosa Actual</h1>
-      <div id="glucosa-valor" class="data">Cargando...</div>
-      <div class="label">mg/dL</div>
-      <p><small>Esta página se actualiza automáticamente.</small></p>
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="openTab(event, 'ahorita')">Medición Actual</button>
+            <button class="tab-button" onclick="openTab(event, 'grafica')">Gráfica Histórica</button>
+        </div>
+
+        <div id="ahorita" class="tab-content active">
+            <h1>Nivel de Glucosa Actual</h1>
+            <div id="glucosa-valor" class="data">Cargando...</div>
+            <div class="label">mg/dL</div>
+        </div>
+
+        <div id="grafica" class="tab-content">
+             <h1>Historial de Mediciones</h1>
+             <canvas id="myChart"></canvas>
+        </div>
     </div>
 
     <script>
-      // Función para obtener y mostrar el dato
-      async function obtenerDato() {
-        try {
-          const response = await fetch("/api/obtener_dato");
-          const data = await response.json();
-          document.getElementById("glucosa-valor").textContent = data.glucosa;
-        } catch (error) {
-          console.error("Error al obtener el dato:", error);
-          document.getElementById("glucosa-valor").textContent = "Error";
+        let myChartInstance = null;
+
+        // Función para cambiar de pestaña
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+
+            // Si abrimos la pestaña de la gráfica, la dibujamos
+            if (tabName === 'grafica') {
+                obtenerYDibujarGrafica();
+            }
         }
-      }
 
-      // Llama a la función al cargar la página
-      obtenerDato();
+        // Función para obtener el dato actual (para la primera pestaña)
+        async function obtenerDatoActual() {
+            try {
+                const response = await fetch('/api/obtener_dato');
+                const data = await response.json();
+                document.getElementById('glucosa-valor').textContent = data.glucosa;
+            } catch (error) {
+                console.error('Error al obtener el dato actual:', error);
+                document.getElementById('glucosa-valor').textContent = 'Error';
+            }
+        }
 
-      // Actualiza el dato cada 15 segundos
-      setInterval(obtenerDato, 1000);
+        // Función para obtener el historial y dibujar la gráfica
+        async function obtenerYDibujarGrafica() {
+            try {
+                const response = await fetch('/api/obtener_historial');
+                const data = await response.json();
+                const historial = data.historial.reverse(); // Revertimos para que el más antiguo salga primero
+
+                const ctx = document.getElementById('myChart').getContext('2d');
+                
+                // Si ya existe una gráfica, la destruimos antes de crear una nueva
+                if(myChartInstance){
+                    myChartInstance.destroy();
+                }
+
+                myChartInstance = new Chart(ctx, {
+                    type: 'line', // Tipo de gráfica
+                    data: {
+                        labels: historial.map((_, index) => `Medición ${index + 1}`), // Etiquetas para el eje X
+                        datasets: [{
+                            label: 'Nivel de Glucosa (mg/dL)',
+                            data: historial, // Los datos del historial
+                            borderColor: 'rgb(0, 123, 255)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                       responsive: true,
+                       maintainAspectRatio: true
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error al obtener el historial:', error);
+            }
+        }
+
+        // Al cargar la página, obtenemos el dato actual
+        document.addEventListener('DOMContentLoaded', () => {
+            obtenerDatoActual();
+            // Y lo actualizamos cada 20 segundos
+            setInterval(obtenerDatoActual, 20000);
+        });
     </script>
-  </body>
+</body>
 </html>
+
 
