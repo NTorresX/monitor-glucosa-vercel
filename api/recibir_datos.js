@@ -1,23 +1,22 @@
 import { kv } from '@vercel/kv';
 
 export default async function handler(request, response) {
-  // Solo permitir peticiones POST
   if (request.method !== 'POST') {
     return response.status(405).json({ message: 'Solo se permite el método POST' });
   }
 
   try {
     const { glucosa } = request.body;
-    
-    // Validar que el dato 'glucosa' fue enviado
     if (glucosa === undefined) {
       return response.status(400).json({ message: 'Falta el dato de glucosa.' });
     }
 
-    // Guardar el valor en la base de datos Vercel KV
-    await kv.set('glucosa_actual', glucosa);
+    // AÑADE el nuevo valor al principio de la lista 'historial_glucosa'
+    await kv.lpush('historial_glucosa', glucosa);
     
-    // Responder al ESP32
+    // MANTIENE la lista con un máximo de 100 registros (los más recientes)
+    await kv.ltrim('historial_glucosa', 0, 99);
+    
     return response.status(200).json({ message: `Dato recibido: ${glucosa}` });
 
   } catch (error) {
