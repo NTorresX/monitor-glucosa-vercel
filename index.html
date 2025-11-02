@@ -12,18 +12,57 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh; /* Usamos min-height para que se adapte al contenido */
         background-color: #f0f2f5;
         margin: 0;
+        padding: 20px; /* Padding general */
+        box-sizing: border-box;
       }
+
+      /* (NUEVO) Contenedor principal para todo el contenido */
+      .page-wrapper {
+        position: relative; /* Clave para posicionar los logos */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 900px; /* Un poco más ancho para los logos */
+        /* Ajusta el padding para dar espacio a los logos absolutos */
+        padding: 0 150px; 
+        box-sizing: border-box;
+      }
+
+      /* (NUEVO) Estilos para los logos en las esquinas */
+      .logo-corner {
+        position: absolute;
+        top: 0;
+        height: 60px; /* Ajusta la altura de tus logos */
+        width: auto;
+      }
+      .logo-left {
+        left: 0;
+      }
+      .logo-right {
+        right: 0;
+      }
+
+      /* (NUEVO) Estilo para el título de bienvenida */
+      .welcome-title {
+        font-size: 1.8em;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
       .container {
         text-align: center;
         padding: 20px 40px 40px 40px;
         background-color: white;
         border-radius: 10px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        width: 90%;
-        max-width: 600px;
+        width: 100%; /* Hacemos que ocupe el 100% del page-wrapper */
+        max-width: 600px; /* Mantenemos el max-width original */
+        box-sizing: border-box;
       }
 
       /* Estilos para las pestañas */
@@ -65,31 +104,60 @@
         font-size: 1.2em;
         color: #666;
       }
+
+      /* (NUEVO) Estilo para el recuadro del paciente */
+      .patient-footer {
+        margin-top: 20px; /* Espacio después del contenedor blanco */
+        padding: 10px 20px;
+        border: 2px solid #555;
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="tab-nav">
-        <button class="tab-button active" onclick="openTab(event, 'ahorita')">
-          Medición Actual
-        </button>
-        <button class="tab-button" onclick="openTab(event, 'grafica')">
-          Gráfica Histórica
-        </button>
+    <div class="page-wrapper">
+      
+      <img
+        src="logo_izquierda.png"
+        alt="Logo GlucoStream"
+        class="logo-corner logo-left"
+      />
+      <img
+        src="logo_derecha.png"
+        alt="Logo GS"
+        class="logo-corner logo-right"
+      />
+
+      <h2 class="welcome-title">
+        ¡Bienvenido! Tu lectura de glucosa es la siguiente:
+      </h2>
+
+      <div class="container">
+        <div class="tab-nav">
+          <button class="tab-button active" onclick="openTab(event, 'ahorita')">
+            Medición Actual
+          </button>
+          <button class="tab-button" onclick="openTab(event, 'grafica')">
+            Gráfica Histórica
+          </button>
+        </div>
+
+        <div id="ahorita" class="tab-content active">
+          <h1>Nivel de Glucosa Actual</h1>
+          <div id="glucosa-valor" class="data">Cargando...</div>
+          <div class="label">mg/dL</div>
+        </div>
+
+        <div id="grafica" class="tab-content">
+          <h1>Historial de Mediciones</h1>
+          <canvas id="myChart"></canvas>
+        </div>
       </div>
 
-      <div id="ahorita" class="tab-content active">
-        <h1>Nivel de Glucosa Actual</h1>
-        <div id="glucosa-valor" class="data">Cargando...</div>
-        <div class="label">mg/dL</div>
-      </div>
-
-      <div id="grafica" class="tab-content">
-        <h1>Historial de Mediciones</h1>
-        <canvas id="myChart"></canvas>
-      </div>
+      <div class="patient-footer">Nombre del paciente: Ernesto Torres Pérez</div>
     </div>
-
     <script>
       let myChartInstance = null;
 
@@ -171,6 +239,3 @@
     </script>
   </body>
 </html>
-
-
-
