@@ -114,6 +114,70 @@
         font-weight: bold;
         color: #333;
       }
+      /*
+========================================
+(NUEVO) CÓDIGO PARA RESPONSIVIDAD MÓVIL
+========================================
+Añade esto al final de tu etiqueta <style>
+*/
+@media (max-width: 768px) {
+  body {
+    /* Permite que el body tenga un alto automático en móviles */
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* 1. Ajustamos el contenedor principal */
+  .page-wrapper {
+    /* Eliminamos el padding lateral de 150px y ponemos uno simple */
+    padding: 20px 15px;
+    width: 100%; /* Ocupa todo el ancho disponible */
+  }
+
+  /* 2. Reposicionamos los logos */
+  .logo-corner {
+    position: relative; /* Ya no es 'absolute' */
+    top: auto;
+    left: auto;
+    right: auto;
+
+    display: block; /* Ocupa su propia línea */
+    margin: 10px auto; /* Centra el logo horizontalmente */
+    height: 45px; /* Los hacemos un poco más pequeños */
+  }
+
+  /* 3. Ajustamos el contenedor de la tarjeta */
+  .container {
+    padding: 20px; /* Reducimos el padding interno en móvil */
+    width: 100%; /* Hacemos que ocupe todo el ancho del wrapper */
+    box-sizing: border-box; /* Asegura que el padding no desborde */
+  }
+
+  /* 4. Ajustamos los tamaños de fuente */
+  .welcome-title {
+    font-size: 1.6em; /* Texto de bienvenida */
+  }
+
+  h1 {
+    font-size: 1.5em; /* "Nivel de Glucosa Actual" */
+    /* Hacemos que el texto se pueda dividir si es muy largo */
+    word-wrap: break-word; 
+  }
+
+  .data {
+    font-size: 3.5em; /* El número '89' */
+  }
+
+  .patient-footer {
+    font-size: 1em; /* El nombre del paciente */
+  }
+
+  /* 5. Ajustamos las pestañas */
+  .tab-button {
+    padding: 15px 10px; /* Menos padding lateral en las pestañas */
+    font-size: 15px;
+  }
+}
     </style>
   </head>
   <body>
@@ -240,6 +304,7 @@
     </script>
   </body>
 </html>
+
 
 
 
