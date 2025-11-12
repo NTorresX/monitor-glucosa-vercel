@@ -11,8 +11,14 @@ export default async function handler(request, response) {
       return response.status(400).json({ message: 'Falta el dato de glucosa.' });
     }
 
-    // AÑADE el nuevo valor al principio de la lista 'historial_glucosa'
-    await kv.lpush('historial_glucosa', glucosa);
+    // (NUEVO) Creamos el objeto con el valor y la fecha
+    const datoConFecha = {
+      valor: glucosa,
+      fecha: new Date().toISOString() // Guarda la fecha actual en formato estándar ISO
+    };
+
+    // (MODIFICADO) Añade el objeto (convertido a string) al principio de la lista
+    await kv.lpush('historial_glucosa', JSON.stringify(datoConFecha));
     
     // MANTIENE la lista con un máximo de 100 registros (los más recientes)
     await kv.ltrim('historial_glucosa', 0, 99);
