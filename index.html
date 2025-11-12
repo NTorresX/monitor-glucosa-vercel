@@ -115,6 +115,28 @@
         color: #333;
         text-align: center;
       }
+      /* Estilos para la tabla histórica */
+      #historial-tabla {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 0.95em;
+      }
+      #historial-tabla th,
+      #historial-tabla td {
+        border: 1px solid #ddd;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      #historial-tabla th {
+        background-color: #f2f2f2;
+        color: #333;
+        font-weight: bold;
+      }
+      /* Filas intercaladas para mejor lectura */
+      #historial-tabla tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
       /*
 ========================================
 ADAPTACION CELULARES
@@ -219,9 +241,24 @@ ADAPTACION CELULARES
           <h1>Historial de Mediciones</h1>
           <canvas id="myChart"></canvas>
         </div>
+
+        <div id="tabla" class="tab-content">
+          <h1>Historial de Mediciones</h1>
+          <table id="historial-tabla">
+            <thead>
+              <tr>
+                <th>Fecha y Hora</th>
+                <th>Glucosa (mg/dL)</th>
+              </tr>
+            </thead>
+            <tbody id="historial-tabla-body"></tbody>
+          </table>
+        </div>    
       </div>
 
-      <div class="patient-footer">Nombre del paciente: Luis Paul Torres Rodarte</div>
+      <div class="patient-footer" id="patient-name-footer">
+        Nombre del paciente: Cargando...
+      </div>
     </div>
     <script>
       let myChartInstance = null;
@@ -244,6 +281,10 @@ ADAPTACION CELULARES
         if (tabName === "grafica") {
           obtenerYDibujarGrafica();
         }
+
+        if (tabName === "tabla") {
+          obtenerYPoblarTabla();
+        }
       }
 
       // Función para obtener el dato actual (para la primera pestaña)
@@ -256,6 +297,34 @@ ADAPTACION CELULARES
           console.error("Error al obtener el dato actual:", error);
           document.getElementById("glucosa-valor").textContent = "Error";
         }
+      }
+
+      // (NUEVA) Función para obtener el nombre del paciente
+      async function obtenerNombrePaciente() {
+        try {
+          const response = await fetch("/api/obtener_paciente");
+          const data = await response.json();
+          // Actualiza el texto en el pie de página
+          document.getElementById(
+            "patient-name-footer"
+          ).textContent = `Nombre del paciente: ${data.nombre}`;
+        } catch (error) {
+          console.error("Error al obtener nombre del paciente:", error);
+          document.getElementById("patient-name-footer").textContent =
+            "Nombre del paciente: Error";
+        }
+      }
+
+      // Función para formatear la fecha
+      function formatearFecha(fechaISO) {
+        const fecha = new Date(fechaISO);
+        return fecha.toLocaleString("es-ES", {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
       }
 
       // Función para obtener el historial y dibujar la gráfica
@@ -295,15 +364,52 @@ ADAPTACION CELULARES
         }
       }
 
+      // Función para obtener historial y poblar la tabla
+      async function obtenerYPoblarTabla() {
+        try {
+          const response = await fetch("/api/obtener_historial");
+          const data = await response.json();
+
+          const historial = data.historial;
+          const tablaBody = document.getElementById("historial-tabla-body");
+          tablaBody.innerHTML = "";
+
+          if (historial.length === 0) {
+            tablaBody.innerHTML =
+              '<tr><td colspan="2">No hay datos registrados.</td></tr>';
+            return;
+          }
+
+          historial.forEach((item) => {
+            const fila = document.createElement("tr");
+            const celdaFecha = document.createElement("td");
+            celdaFecha.textContent = formatearFecha(item.fecha);
+            fila.appendChild(celdaFecha);
+
+            const celdaValor = document.createElement("td");
+            celdaValor.textContent = item.valor;
+            fila.appendChild(celdaValor);
+
+            tablaBody.appendChild(fila);
+          });
+        } catch (error) {
+          console.error("Error al poblar la tabla:", error);
+          document.getElementById("historial-tabla-body").innerHTML =
+            '<tr><td colspan="2">Error al cargar los datos.</td></tr>';
+        }
+      }
+
       // Al cargar la página, obtenemos el dato actual
       document.addEventListener("DOMContentLoaded", () => {
         obtenerDatoActual();
+        obtenerNombrePaciente();
         // Y lo actualizamos cada n segundos
         setInterval(obtenerDatoActual, 1000);
       });
     </script>
   </body>
 </html>
+
 
 
 
