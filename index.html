@@ -201,6 +201,7 @@ ADAPTACION CELULARES
     </div>
     <script>
       let myChartInstance = null;
+      let glucosaAnterior = null;
 
       // Función para cambiar de pestaña
       function openTab(evt, tabName) {
@@ -225,38 +226,50 @@ ADAPTACION CELULARES
       // Dentro de la etiqueta <script> en index.html
 
       // Dentro de <script> en index.html
-async function obtenerDatoActual() {
-  try {
-    const response = await fetch("/api/obtener_dato");
-    // data ahora es { glucosa: "...", nombre: "..." }
-    const data = await response.json(); 
+      // Dentro de <script> en index.html
 
-    document.getElementById("glucosa-valor").textContent = data.glucosa;
-    document.querySelector(".patient-footer").textContent = "Nombre del paciente: " + data.nombre;
+      async function obtenerDatoActual() {
+        try {
+          const response = await fetch("/api/obtener_dato");
+          // data ahora es { glucosa: "...", nombre: "..." }
+          const data = await response.json(); 
 
-    // NUEVO: Generar la fecha/hora localmente
-    const tiempoEl = document.getElementById("glucosa-tiempo");
-    if (data.glucosa && data.glucosa !== '---') {
-      // ¡Crea la fecha en el navegador!
-      const date = new Date(); 
-      tiempoEl.textContent = "Última lectura: " + date.toLocaleString('es-MX', {
-        day: 'numeric', 
-        month: 'short', 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit'
-      });
-    } else {
-      tiempoEl.textContent = ""; // No mostrar nada si no hay dato
-    }
+          // Actualizamos el nombre del paciente siempre
+          document.querySelector(".patient-footer").textContent = "Nombre del paciente: " + data.nombre;
 
-  } catch (error) {
-    console.error("Error al obtener el dato actual:", error);
-    document.getElementById("glucosa-valor").textContent = "Error";
-    document.querySelector(".patient-footer").textContent = "Nombre del paciente: Error";
-    document.getElementById("glucosa-tiempo").textContent = "";
-  }
-}
+          // --- ¡NUEVA LÓGICA DE COMPARACIÓN! ---
+          
+          // Solo actualizamos la pantalla si el dato de glucosa es VÁLIDO y es DIFERENTE al anterior
+          if (data.glucosa && data.glucosa !== '---' && data.glucosa !== glucosaAnterior) {
+            
+            // 1. Actualiza el valor de glucosa en la pantalla
+            document.getElementById("glucosa-valor").textContent = data.glucosa;
+
+            // 2. Guarda este nuevo valor como el "anterior" para la próxima revisión
+            glucosaAnterior = data.glucosa;
+
+            // 3. ¡Genera la fecha y hora SOLO AHORA, porque el dato es nuevo!
+            const tiempoEl = document.getElementById("glucosa-tiempo");
+            const date = new Date(); // Genera la fecha actual
+            tiempoEl.textContent = "Última lectura: " + date.toLocaleString('es-MX', {
+              day: 'numeric', 
+              month: 'short', 
+              hour: '2-digit', 
+              minute: '2-digit', 
+              second: '2-digit'
+            });
+          }
+          // Si el dato es el mismo que 'glucosaAnterior', no se hace nada
+          // y la fecha/hora en pantalla no se actualiza.
+
+        } catch (error) {
+          console.error("Error al obtener el dato actual:", error);
+          document.getElementById("glucosa-valor").textContent = "Error";
+          document.querySelector(".patient-footer").textContent = "Nombre del paciente: Error";
+          document.getElementById("glucosa-tiempo").textContent = "";
+          glucosaAnterior = null; // Resetea en caso de error
+        }
+      }
 
       // Dentro de la etiqueta <script> en index.html
 
@@ -310,6 +323,7 @@ async function obtenerDatoActual() {
     </script>
   </body>
 </html>
+
 
 
 
