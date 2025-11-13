@@ -1,4 +1,3 @@
-// api/recibir_datos.js
 import { kv } from '@vercel/kv';
 
 export default async function handler(request, response) {
@@ -13,20 +12,17 @@ export default async function handler(request, response) {
       return response.status(400).json({ message: 'Falta el dato de glucosa.' });
     }
     
-    // --- NUEVO: Crear el objeto de datos con timestamp ---
-    const timestamp = new Date().toISOString(); // Genera la fecha/hora actual en formato ISO (UTC)
+    // --- Proceso de Glucosa con Timestamp ---
+    const timestamp = new Date().toISOString(); 
     const dataPoint = JSON.stringify({
       time: timestamp,
       value: glucosa
     });
     
-    // AÑADE el objeto (como string) al principio de la lista
     await kv.lpush('historial_glucosa', dataPoint);
-    
-    // MANTIENE la lista con un máximo de 100 registros
     await kv.ltrim('historial_glucosa', 0, 99);
 
-    // --- Proceso de Nombre (sin cambios) ---
+    // --- Proceso de Nombre ---
     if (nombre !== undefined) {
       await kv.set('paciente_nombre', nombre);
     }
@@ -37,3 +33,4 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: error.message });
   }
 }
+
