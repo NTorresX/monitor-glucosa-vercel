@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monitor de Glucosa</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -12,31 +11,28 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh; /* Usamos min-height para que se adapte al contenido */
+        min-height: 100vh;
         background-color: #ffffff;
         margin: 0;
-        padding: 20px; /* Padding general */
+        padding: 20px;
         box-sizing: border-box;
       }
 
-      /* (NUEVO) Contenedor principal para todo el contenido */
       .page-wrapper {
-        position: relative; /* Clave para posicionar los logos */
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
-        max-width: 900px; /* Un poco más ancho para los logos */
-        /* Ajusta el padding para dar espacio a los logos absolutos */
-        padding: 0 150px; 
+        max-width: 900px;
+        padding: 0 150px;
         box-sizing: border-box;
       }
 
-      /* (NUEVO) Estilos para los logos en las esquinas */
       .logo-corner {
         position: absolute;
         top: 0;
-        height: 60px; /* Ajusta la altura de tus logos */
+        height: 60px;
         width: auto;
       }
       .logo-left {
@@ -46,7 +42,6 @@
         right: 0;
       }
 
-      /* (NUEVO) Estilo para el título de bienvenida */
       .welcome-title {
         font-size: 1.8em;
         color: #333;
@@ -59,37 +54,12 @@
         padding: 20px 40px 40px 40px;
         background-color: white;
         border-radius: 10px;
-        
-        width: 100%; /* Hacemos que ocupe el 100% del page-wrapper */
-        max-width: 600px; /* Mantenemos el max-width original */
+        width: 100%;
+        max-width: 600px;
         box-sizing: border-box;
       }
 
-      /* Estilos para las pestañas */
-      .tab-nav {
-        border-bottom: 1px solid #ccc;
-        margin-bottom: 20px;
-      }
-      .tab-button {
-        background: none;
-        border: none;
-        padding: 15px 20px;
-        cursor: pointer;
-        font-size: 16px;
-        color: #555;
-      }
-      .tab-button.active {
-        border-bottom: 3px solid #007bff;
-        color: #007bff;
-        font-weight: bold;
-      }
-
-      .tab-content {
-        display: none;
-      }
-      .tab-content.active {
-        display: block;
-      }
+      /* Se eliminaron todos los estilos de .tab- y #historial-tabla */
 
       h1 {
         color: #333;
@@ -105,9 +75,8 @@
         color: #666;
       }
 
-      /* (NUEVO) Estilo para el recuadro del paciente */
       .patient-footer {
-        margin-top: 20px; /* Espacio después del contenedor blanco */
+        margin-top: 20px;
         padding: 10px 20px;
         border: 2px solid #555;
         font-size: 1.2em;
@@ -115,106 +84,60 @@
         color: #333;
         text-align: center;
       }
-      /* Estilos para la tabla histórica */
-      #historial-tabla {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        font-size: 0.95em;
-      }
-      #historial-tabla th,
-      #historial-tabla td {
-        border: 1px solid #ddd;
-        padding: 8px 12px;
-        text-align: left;
-      }
-      #historial-tabla th {
-        background-color: #f2f2f2;
-        color: #333;
-        font-weight: bold;
-      }
-      /* Filas intercaladas para mejor lectura */
-      #historial-tabla tr:nth-child(even) {
-        background-color: #f9f9f9;
-      }
+
       /*
 ========================================
 ADAPTACION CELULARES
 ========================================
       */
-@media (max-width: 768px) {
-  body {
-    /* Permite que el body tenga un alto automático en móviles */
-    height: auto;
-    min-height: 100vh;
-  }
-
-  /* 1. Ajustamos el contenedor principal */
-  .page-wrapper {
-    /* Eliminamos el padding lateral de 150px y ponemos uno simple */
-    padding: 20px 15px;
-    width: 100%; /* Ocupa todo el ancho disponible */
-  }
-
-  /* 2. Reposicionamos los logos */
-  .logo-corner {
-    position: relative; /* Ya no es 'absolute' */
-    top: auto;
-    left: auto;
-    right: auto;
-
-    display: block; /* Ocupa su propia línea */
-    margin: 10px auto; /* Centra el logo horizontalmente */
-    height: 45px; /* Los hacemos un poco más pequeños */
-  }
-
-  /* 3. Ajustamos el contenedor de la tarjeta */
-  .container {
-    padding: 20px; /* Reducimos el padding interno en móvil */
-    width: 100%; /* Hacemos que ocupe todo el ancho del wrapper */
-    box-sizing: border-box; /* Asegura que el padding no desborde */
-  }
-
-  /* 4. Ajustamos los tamaños de fuente */
-  .welcome-title {
-    font-size: 1.6em; /* Texto de bienvenida */
-  }
-
-  h1 {
-    font-size: 1.5em; /* "Nivel de Glucosa Actual" */
-    /* Hacemos que el texto se pueda dividir si es muy largo */
-    word-wrap: break-word; 
-  }
-
-  .data {
-    font-size: 3.5em; /* El número '89' */
-  }
-
-  .patient-footer {
-    font-size: 1em; /* El nombre del paciente */
-  }
-
-  /* 5. Ajustamos las pestañas */
-  .tab-button {
-    padding: 15px 10px; /* Menos padding lateral en las pestañas */
-    font-size: 15px;
-  }
-}
+      @media (max-width: 768px) {
+        body {
+          height: auto;
+          min-height: 100vh;
+        }
+        .page-wrapper {
+          padding: 20px 15px;
+          width: 100%;
+        }
+        .logo-corner {
+          position: relative;
+          top: auto;
+          left: auto;
+          right: auto;
+          display: block;
+          margin: 10px auto;
+          height: 45px;
+        }
+        .container {
+          padding: 20px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .welcome-title {
+          font-size: 1.6em;
+        }
+        h1 {
+          font-size: 1.5em;
+          word-wrap: break-word;
+        }
+        .data {
+          font-size: 3.5em;
+        }
+        .patient-footer {
+          font-size: 1em;
+        }
+        /* Se eliminó el ajuste de pestañas */
+      }
     </style>
   </head>
   <body>
     <div class="page-wrapper">
-      
       <img
         src="Images/GlucoStream.jpeg"
         alt="Logo GlucoStream"
         class="logo-corner logo-left"
       />
-      <img
-        src="Images/GS.jpeg"
-        alt="Logo GS"
-        class="logo-corner logo-right"
-      />
+      <img src="Images/GS.jpeg" alt="Logo GS" class="logo-corner logo-right" />
 
       <h2 class="welcome-title">
         ¡Bienvenido! <br />
@@ -222,41 +145,11 @@ ADAPTACION CELULARES
       </h2>
 
       <div class="container">
-        <div class="tab-nav">
-          <button class="tab-button active" onclick="openTab(event, 'ahorita')">
-            Medición Actual
-          </button>
-          <button class="tab-button" onclick="openTab(event, 'grafica')">
-            Gráfica Histórica
-          </button>
-          <button class="tab-button" onclick="openTab(event, 'tabla')">
-            Tabla Histórica
-          </button>
-        </div>
-
-        <div id="ahorita" class="tab-content active">
+        <div id="ahorita">
           <h1>Nivel de Glucosa Actual</h1>
           <div id="glucosa-valor" class="data">Cargando...</div>
           <div class="label">mg/dL</div>
         </div>
-
-        <div id="grafica" class="tab-content">
-          <h1>Historial de Mediciones</h1>
-          <canvas id="myChart"></canvas>
-        </div>
-
-        <div id="tabla" class="tab-content">
-          <h1>Historial de Mediciones</h1>
-          <table id="historial-tabla">
-            <thead>
-              <tr>
-                <th>Fecha y Hora</th>
-                <th>Glucosa (mg/dL)</th>
-              </tr>
-            </thead>
-            <tbody id="historial-tabla-body"></tbody>
-          </table>
-        </div>    
       </div>
 
       <div class="patient-footer" id="patient-name-footer">
@@ -264,50 +157,22 @@ ADAPTACION CELULARES
       </div>
     </div>
     <script>
-      let myChartInstance = null;
-
-      // Función para cambiar de pestaña
-      function openTab(evt, tabName) {
-        let i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tab-content");
-        for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tab-button");
-        for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-
-        // Si abrimos la pestaña de la gráfica, la dibujamos
-        if (tabName === "grafica") {
-          obtenerYDibujarGrafica();
-        }
-
-        if (tabName === "tabla") {
-          obtenerYPoblarTabla();
-        }
-      }
-
-      // Función para obtener el dato actual (para la primera pestaña)
       async function obtenerDatoActual() {
         try {
           const response = await fetch("/api/obtener_dato");
           const data = await response.json();
-          document.getElementById("glucosa-valor").textContent = data.glucosa.valor;
+          document.getElementById("glucosa-valor").textContent = data.glucosa;
         } catch (error) {
           console.error("Error al obtener el dato actual:", error);
           document.getElementById("glucosa-valor").textContent = "Error";
         }
       }
 
-      // (NUEVA) Función para obtener el nombre del paciente
+      // Función para obtener el nombre del paciente
       async function obtenerNombrePaciente() {
         try {
           const response = await fetch("/api/obtener_paciente");
           const data = await response.json();
-          // Actualiza el texto en el pie de página
           document.getElementById(
             "patient-name-footer"
           ).textContent = `Nombre del paciente: ${data.nombre}`;
@@ -318,96 +183,12 @@ ADAPTACION CELULARES
         }
       }
 
-      // Función para formatear la fecha
-      function formatearFecha(fechaISO) {
-        const fecha = new Date(fechaISO);
-        return fecha.toLocaleString("es-ES", {
-          day: "numeric",
-          month: "short",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        });
-      }
-
-      // Función para obtener el historial y dibujar la gráfica
-      async function obtenerYDibujarGrafica() {
-        try {
-          const response = await fetch("/api/obtener_historial");
-          const data = await response.json();
-          const historial = data.historial.reverse(); // Revertimos para que el más antiguo salga primero
-
-          const ctx = document.getElementById("myChart").getContext("2d");
-
-          // Si ya existe una gráfica, la destruimos antes de crear una nueva
-          if (myChartInstance) {
-            myChartInstance.destroy();
-          }
-
-          myChartInstance = new Chart(ctx, {
-            type: "line", // Tipo de gráfica
-            data: {
-              labels: historial.map(item => formatearFecha(item.fecha)), // Etiquetas para el eje X
-              datasets: [
-                {
-                  label: "Nivel de Glucosa (mg/dL)",
-                  data: historial.map(item => item.valor), // Los datos del historial
-                  borderColor: "rgb(0, 123, 255)",
-                  tension: 0.1,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: true,
-            },
-          });
-        } catch (error) {
-          console.error("Error al obtener el historial:", error);
-        }
-      }
-
-      // Función para obtener historial y poblar la tabla
-      async function obtenerYPoblarTabla() {
-        try {
-          const response = await fetch("/api/obtener_historial");
-          const data = await response.json();
-
-          const historial = data.historial;
-          const tablaBody = document.getElementById("historial-tabla-body");
-          tablaBody.innerHTML = "";
-
-          if (historial.length === 0) {
-            tablaBody.innerHTML =
-              '<tr><td colspan="2">No hay datos registrados.</td></tr>';
-            return;
-          }
-
-          historial.forEach((item) => {
-            const fila = document.createElement("tr");
-            const celdaFecha = document.createElement("td");
-            celdaFecha.textContent = formatearFecha(item.fecha);
-            fila.appendChild(celdaFecha);
-
-            const celdaValor = document.createElement("td");
-            celdaValor.textContent = item.valor;
-            fila.appendChild(celdaValor);
-
-            tablaBody.appendChild(fila);
-          });
-        } catch (error) {
-          console.error("Error al poblar la tabla:", error);
-          document.getElementById("historial-tabla-body").innerHTML =
-            '<tr><td colspan="2">Error al cargar los datos.</td></tr>';
-        }
-      }
-
       // Al cargar la página, obtenemos el dato actual
       document.addEventListener("DOMContentLoaded", () => {
         obtenerDatoActual();
         obtenerNombrePaciente();
         // Y lo actualizamos cada n segundos
-        setInterval(obtenerDatoActual, 1000);
+        setInterval(obtenerDatoActual, 500);
       });
     </script>
   </body>
