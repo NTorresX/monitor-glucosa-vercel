@@ -11,7 +11,7 @@ export default async function handler(request, response) {
     if (glucosa === undefined) {
       return response.status(400).json({ message: 'Falta el dato de glucosa.' });
     }
-    console.log(nombre);
+    
     // AÑADE el nuevo valor al principio de la lista 'historial_glucosa'
     await kv.lpush('historial_glucosa', glucosa);
     
@@ -24,5 +24,3 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: error.message });
   }
 }
-
-
