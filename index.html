@@ -295,7 +295,7 @@ ADAPTACION CELULARES
         try {
           const response = await fetch("/api/obtener_dato");
           const data = await response.json();
-          document.getElementById("glucosa-valor").textContent = data.glucosa.valor;
+          document.getElementById("glucosa-valor").textContent = data.glucosa;
         } catch (error) {
           console.error("Error al obtener el dato actual:", error);
           document.getElementById("glucosa-valor").textContent = "Error";
@@ -347,11 +347,11 @@ ADAPTACION CELULARES
           myChartInstance = new Chart(ctx, {
             type: "line", // Tipo de gráfica
             data: {
-              labels: historial.map((_, index) => `Medición ${index + 1}`), // Etiquetas para el eje X
+              labels: historial.map(item => formatearFecha(item.fecha)), // Etiquetas para el eje X
               datasets: [
                 {
                   label: "Nivel de Glucosa (mg/dL)",
-                  data: historial, // Los datos del historial
+                  data: historial.map(item => item.valor), // Los datos del historial
                   borderColor: "rgb(0, 123, 255)",
                   tension: 0.1,
                 },
@@ -412,6 +412,7 @@ ADAPTACION CELULARES
     </script>
   </body>
 </html>
+
 
 
 
