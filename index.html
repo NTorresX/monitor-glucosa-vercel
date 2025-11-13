@@ -295,7 +295,7 @@ ADAPTACION CELULARES
         try {
           const response = await fetch("/api/obtener_dato");
           const data = await response.json();
-          document.getElementById("glucosa-valor").textContent = data.glucosa;
+          document.getElementById("glucosa-valor").textContent = data.glucosa.valor;
         } catch (error) {
           console.error("Error al obtener el dato actual:", error);
           document.getElementById("glucosa-valor").textContent = "Error";
@@ -412,6 +412,7 @@ ADAPTACION CELULARES
     </script>
   </body>
 </html>
+
 
 
 
