@@ -1,28 +1,28 @@
-// api/obtener_dato.js
 import { kv } from '@vercel/kv';
 
 export default async function handler(request, response) {
   try {
-    // OBTIENE el primer elemento (un string JSON)
+    // 1. Obtiene el string JSON más reciente
     const glucosaRecienteString = await kv.lindex('historial_glucosa', 0);
     
-    // Obtiene el nombre
+    // 2. Obtiene el nombre
     const nombrePaciente = await kv.get('paciente_nombre');
     
-    // NUEVO: Parsea el string para obtener el valor
+    // 3. Parsea el string para obtener el valor
     let glucosaReciente = '---';
     if (glucosaRecienteString) {
       const dataPoint = JSON.parse(glucosaRecienteString);
       glucosaReciente = dataPoint.value; // Extraemos solo el 'value'
     }
     
-    // Devuelve ambos datos en un solo JSON
+    // 4. Devuelve AMBOS datos
     return response.status(200).json({ 
       glucosa: glucosaReciente,
       nombre: nombrePaciente || '---'
     });
 
-  } catch (error) {
+  } catch (error)
     return response.status(500).json({ error: error.message });
   }
 }
+
