@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monitor de Glucosa</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -11,28 +12,31 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+        min-height: 100vh; /* Usamos min-height para que se adapte al contenido */
         background-color: #ffffff;
         margin: 0;
-        padding: 20px;
+        padding: 20px; /* Padding general */
         box-sizing: border-box;
       }
 
+      /* (NUEVO) Contenedor principal para todo el contenido */
       .page-wrapper {
-        position: relative;
+        position: relative; /* Clave para posicionar los logos */
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
-        max-width: 900px;
+        max-width: 900px; /* Un poco más ancho para los logos */
+        /* Ajusta el padding para dar espacio a los logos absolutos */
         padding: 0 150px;
         box-sizing: border-box;
       }
 
+      /* (NUEVO) Estilos para los logos en las esquinas */
       .logo-corner {
         position: absolute;
         top: 0;
-        height: 60px;
+        height: 60px; /* Ajusta la altura de tus logos */
         width: auto;
       }
       .logo-left {
@@ -42,6 +46,7 @@
         right: 0;
       }
 
+      /* (NUEVO) Estilo para el título de bienvenida */
       .welcome-title {
         font-size: 1.8em;
         color: #333;
@@ -54,12 +59,37 @@
         padding: 20px 40px 40px 40px;
         background-color: white;
         border-radius: 10px;
-        width: 100%;
-        max-width: 600px;
+
+        width: 100%; /* Hacemos que ocupe el 100% del page-wrapper */
+        max-width: 600px; /* Mantenemos el max-width original */
         box-sizing: border-box;
       }
 
-      /* Se eliminaron todos los estilos de .tab- y #historial-tabla */
+      /* Estilos para las pestañas */
+      .tab-nav {
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 20px;
+      }
+      .tab-button {
+        background: none;
+        border: none;
+        padding: 15px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        color: #555;
+      }
+      .tab-button.active {
+        border-bottom: 3px solid #007bff;
+        color: #007bff;
+        font-weight: bold;
+      }
+
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
 
       h1 {
         color: #333;
@@ -75,58 +105,14 @@
         color: #666;
       }
 
+      /* (NUEVO) Estilo para el recuadro del paciente */
       .patient-footer {
-        margin-top: 20px;
+        margin-top: 20px; /* Espacio después del contenedor blanco */
         padding: 10px 20px;
         border: 2px solid #555;
         font-size: 1.2em;
         font-weight: bold;
         color: #333;
-        text-align: center;
-      }
-
-      /*
-========================================
-ADAPTACION CELULARES
-========================================
-      */
-      @media (max-width: 768px) {
-        body {
-          height: auto;
-          min-height: 100vh;
-        }
-        .page-wrapper {
-          padding: 20px 15px;
-          width: 100%;
-        }
-        .logo-corner {
-          position: relative;
-          top: auto;
-          left: auto;
-          right: auto;
-          display: block;
-          margin: 10px auto;
-          height: 45px;
-        }
-        .container {
-          padding: 20px;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .welcome-title {
-          font-size: 1.6em;
-        }
-        h1 {
-          font-size: 1.5em;
-          word-wrap: break-word;
-        }
-        .data {
-          font-size: 3.5em;
-        }
-        .patient-footer {
-          font-size: 1em;
-        }
-        /* Se eliminó el ajuste de pestañas */
       }
     </style>
   </head>
@@ -145,18 +131,55 @@ ADAPTACION CELULARES
       </h2>
 
       <div class="container">
-        <div id="ahorita">
+        <div class="tab-nav">
+          <button class="tab-button active" onclick="openTab(event, 'ahorita')">
+            Medición Actual
+          </button>
+          <button class="tab-button" onclick="openTab(event, 'grafica')">
+            Gráfica Histórica
+          </button>
+        </div>
+
+        <div id="ahorita" class="tab-content active">
           <h1>Nivel de Glucosa Actual</h1>
           <div id="glucosa-valor" class="data">Cargando...</div>
           <div class="label">mg/dL</div>
         </div>
+
+        <div id="grafica" class="tab-content">
+          <h1>Historial de Mediciones</h1>
+          <canvas id="myChart"></canvas>
+        </div>
       </div>
 
-      <div class="patient-footer" id="patient-name-footer">
-        Nombre del paciente: Cargando...
+      <div class="patient-footer">
+        Nombre del paciente: Luis Paul Torres Rodarte
       </div>
     </div>
     <script>
+      let myChartInstance = null;
+
+      // Función para cambiar de pestaña
+      function openTab(evt, tabName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+
+        // Si abrimos la pestaña de la gráfica, la dibujamos
+        if (tabName === "grafica") {
+          obtenerYDibujarGrafica();
+        }
+      }
+
+      // Función para obtener el dato actual (para la primera pestaña)
       async function obtenerDatoActual() {
         try {
           const response = await fetch("/api/obtener_dato");
@@ -168,31 +191,53 @@ ADAPTACION CELULARES
         }
       }
 
-      // Función para obtener el nombre del paciente
-      async function obtenerNombrePaciente() {
+      // Función para obtener el historial y dibujar la gráfica
+      async function obtenerYDibujarGrafica() {
         try {
-          const response = await fetch("/api/obtener_paciente");
+          const response = await fetch("/api/obtener_historial");
           const data = await response.json();
-          document.getElementById(
-            "patient-name-footer"
-          ).textContent = `Nombre del paciente: ${data.nombre}`;
+          const historial = data.historial.reverse(); // Revertimos para que el más antiguo salga primero
+
+          const ctx = document.getElementById("myChart").getContext("2d");
+
+          // Si ya existe una gráfica, la destruimos antes de crear una nueva
+          if (myChartInstance) {
+            myChartInstance.destroy();
+          }
+
+          myChartInstance = new Chart(ctx, {
+            type: "line", // Tipo de gráfica
+            data: {
+              labels: historial.map((_, index) => `Medición ${index + 1}`), // Etiquetas para el eje X
+              datasets: [
+                {
+                  label: "Nivel de Glucosa (mg/dL)",
+                  data: historial, // Los datos del historial
+                  borderColor: "rgb(0, 123, 255)",
+                  tension: 0.1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+            },
+          });
         } catch (error) {
-          console.error("Error al obtener nombre del paciente:", error);
-          document.getElementById("patient-name-footer").textContent =
-            "Nombre del paciente: Error";
+          console.error("Error al obtener el historial:", error);
         }
       }
 
       // Al cargar la página, obtenemos el dato actual
       document.addEventListener("DOMContentLoaded", () => {
         obtenerDatoActual();
-        obtenerNombrePaciente();
         // Y lo actualizamos cada n segundos
-        setInterval(obtenerDatoActual, 500);
+        setInterval(obtenerDatoActual, 1000);
       });
     </script>
   </body>
 </html>
+
 
 
 
