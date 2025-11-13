@@ -6,20 +6,15 @@ export default async function handler(request, response) {
   }
 
   try {
+    // Extraemos ambos datos
     const { glucosa, nombre } = request.body;
     
     if (glucosa === undefined) {
       return response.status(400).json({ message: 'Falta el dato de glucosa.' });
     }
     
-    // --- Proceso de Glucosa con Timestamp ---
-    const timestamp = new Date().toISOString(); 
-    const dataPoint = JSON.stringify({
-      time: timestamp,
-      value: glucosa
-    });
-    
-    await kv.lpush('historial_glucosa', dataPoint);
+    // --- Proceso de Glucosa (Guarda solo el número) ---
+    await kv.lpush('historial_glucosa', glucosa);
     await kv.ltrim('historial_glucosa', 0, 99);
 
     // --- Proceso de Nombre ---
