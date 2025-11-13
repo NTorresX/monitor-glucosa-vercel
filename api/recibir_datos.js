@@ -7,22 +7,26 @@ export default async function handler(request, response) {
   }
 
   try {
-    // Extraemos ambos datos del cuerpo de la petición
     const { glucosa, nombre } = request.body;
     
     if (glucosa === undefined) {
       return response.status(400).json({ message: 'Falta el dato de glucosa.' });
     }
     
-    // --- Proceso de Glucosa (sin cambios) ---
-    // AÑADE el nuevo valor al principio de la lista 'historial_glucosa'
-    await kv.lpush('historial_glucosa', glucosa);
-    // MANTIENE la lista con un máximo de 100 registros (los más recientes)
+    // --- NUEVO: Crear el objeto de datos con timestamp ---
+    const timestamp = new Date().toISOString(); // Genera la fecha/hora actual en formato ISO (UTC)
+    const dataPoint = JSON.stringify({
+      time: timestamp,
+      value: glucosa
+    });
+    
+    // AÑADE el objeto (como string) al principio de la lista
+    await kv.lpush('historial_glucosa', dataPoint);
+    
+    // MANTIENE la lista con un máximo de 100 registros
     await kv.ltrim('historial_glucosa', 0, 99);
 
-    // --- NUEVO: Proceso de Nombre ---
-    // Si el nombre también vino en la petición, lo guardamos
-    // Esto sobrescribirá el nombre anterior con el más reciente
+    // --- Proceso de Nombre (sin cambios) ---
     if (nombre !== undefined) {
       await kv.set('paciente_nombre', nombre);
     }
@@ -33,4 +37,3 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: error.message });
   }
 }
-
