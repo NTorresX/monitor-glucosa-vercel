@@ -114,6 +114,50 @@
         font-weight: bold;
         color: #333;
       }
+
+      /*
+========================================
+ADAPTACION CELULARES
+========================================
+      */
+      @media (max-width: 768px) {
+        body {
+          height: auto;
+          min-height: 100vh;
+        }
+        .page-wrapper {
+          padding: 20px 15px;
+          width: 100%;
+        }
+        .logo-corner {
+          position: relative;
+          top: auto;
+          left: auto;
+          right: auto;
+          display: block;
+          margin: 10px auto;
+          height: 45px;
+        }
+        .container {
+          padding: 20px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .welcome-title {
+          font-size: 1.6em;
+        }
+        h1 {
+          font-size: 1.5em;
+          word-wrap: break-word;
+        }
+        .data {
+          font-size: 3.5em;
+        }
+        .patient-footer {
+          font-size: 1em;
+        }
+        /* Se eliminó el ajuste de pestañas */
+      }
     </style>
   </head>
   <body>
@@ -152,8 +196,8 @@
         </div>
       </div>
 
-      <div class="patient-footer">
-        Nombre del paciente: Luis Paul Torres Rodarte
+      <div class="patient-footer" id="nombre">
+        Nombre del paciente: Cargando...
       </div>
     </div>
     <script>
@@ -185,9 +229,11 @@
           const response = await fetch("/api/obtener_dato");
           const data = await response.json();
           document.getElementById("glucosa-valor").textContent = data.glucosa;
+          document.getElementById("nombre").textContent = data.nombre;
         } catch (error) {
           console.error("Error al obtener el dato actual:", error);
           document.getElementById("glucosa-valor").textContent = "Error";
+          document.getElementById("nombre").textContent = "Error";
         }
       }
 
