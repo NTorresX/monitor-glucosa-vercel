@@ -221,15 +221,28 @@ ADAPTACION CELULARES
         }
       }
 
+      // Dentro de la etiqueta <script> en index.html
+
       // Función para obtener el dato actual (para la primera pestaña)
       async function obtenerDatoActual() {
         try {
           const response = await fetch("/api/obtener_dato");
-          const data = await response.json();
+          const data = await response.json(); // data ahora es { glucosa: "...", nombre: "..." }
+
+          // Actualiza el valor de glucosa
           document.getElementById("glucosa-valor").textContent = data.glucosa;
+
+          // NUEVO: Actualiza el nombre del paciente
+          // Seleccionamos el div por su clase '.patient-footer'
+          document.querySelector(".patient-footer").textContent =
+            "Nombre del paciente: " + data.nombre;
         } catch (error) {
           console.error("Error al obtener el dato actual:", error);
           document.getElementById("glucosa-valor").textContent = "Error";
+
+          // NUEVO: También actualiza el nombre en caso de error
+          document.querySelector(".patient-footer").textContent =
+            "Nombre del paciente: Error";
         }
       }
 
@@ -279,6 +292,7 @@ ADAPTACION CELULARES
     </script>
   </body>
 </html>
+
 
 
 
