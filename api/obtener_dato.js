@@ -10,20 +10,20 @@ export default async function handler(request, response) {
     }
 
     // (MODIFICADO) Analizamos el string JSON
-    let glucosaObjeto = null; // Cambiamos el nombre de la variable
+    let glucosaValor = '---';
     try {
       const datoParseado = JSON.parse(datoRecienteString);
-      glucosaObjeto = datoParseado; // <-- AHORA GUARDAS EL OBJETO COMPLETO
+      glucosaValor = datoParseado.valor; // Extraemos solo el valor
     } catch (e) {
-      // Si falla, creamos un objeto por defecto
-      glucosaObjeto = { valor: datoRecienteString || '---', fecha: new Date().toISOString() };
+      // Si falla (es un dato antiguo), intentamos mostrarlo directamente
+      glucosaValor = datoRecienteString;
     }
     
-    // (MODIFICADO) Devolvemos el objeto completo
-    return response.status(200).json({ glucosa: glucosaObjeto });
+    return response.status(200).json({ "glucosa": glucosaValor});
 
   } catch (error) {
     return response.status(500).json({ error: error.message });
   }
 }
+
 
