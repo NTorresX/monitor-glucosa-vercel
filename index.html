@@ -223,28 +223,39 @@ ADAPTACION CELULARES
 
       // Dentro de la etiqueta <script> en index.html
 
-      // Función para obtener el dato actual (para la primera pestaña)
-      async function obtenerDatoActual() {
-        try {
-          const response = await fetch("/api/obtener_dato");
-          const data = await response.json(); // data ahora es { glucosa: "...", nombre: "..." }
+      // Dentro de <script> en index.html
+async function obtenerDatoActual() {
+  try {
+    const response = await fetch("/api/obtener_dato");
+    // data ahora es { glucosa: "...", nombre: "..." }
+    const data = await response.json(); 
 
-          // Actualiza el valor de glucosa
-          document.getElementById("glucosa-valor").textContent = data.glucosa;
+    document.getElementById("glucosa-valor").textContent = data.glucosa;
+    document.querySelector(".patient-footer").textContent = "Nombre del paciente: " + data.nombre;
 
-          // NUEVO: Actualiza el nombre del paciente
-          // Seleccionamos el div por su clase '.patient-footer'
-          document.querySelector(".patient-footer").textContent =
-            "Nombre del paciente: " + data.nombre;
-        } catch (error) {
-          console.error("Error al obtener el dato actual:", error);
-          document.getElementById("glucosa-valor").textContent = "Error";
+    // NUEVO: Generar la fecha/hora localmente
+    const tiempoEl = document.getElementById("glucosa-tiempo");
+    if (data.glucosa && data.glucosa !== '---') {
+      // ¡Crea la fecha en el navegador!
+      const date = new Date(); 
+      tiempoEl.textContent = "Última lectura: " + date.toLocaleString('es-MX', {
+        day: 'numeric', 
+        month: 'short', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit'
+      });
+    } else {
+      tiempoEl.textContent = ""; // No mostrar nada si no hay dato
+    }
 
-          // NUEVO: También actualiza el nombre en caso de error
-          document.querySelector(".patient-footer").textContent =
-            "Nombre del paciente: Error";
-        }
-      }
+  } catch (error) {
+    console.error("Error al obtener el dato actual:", error);
+    document.getElementById("glucosa-valor").textContent = "Error";
+    document.querySelector(".patient-footer").textContent = "Nombre del paciente: Error";
+    document.getElementById("glucosa-tiempo").textContent = "";
+  }
+}
 
       // Dentro de la etiqueta <script> en index.html
 
@@ -298,6 +309,7 @@ ADAPTACION CELULARES
     </script>
   </body>
 </html>
+
 
 
 
