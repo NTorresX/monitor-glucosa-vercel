@@ -248,32 +248,16 @@ ADAPTACION CELULARES
 
       // Dentro de la etiqueta <script> en index.html
 
+      // Dentro de la etiqueta <script> en index.html
+
       // Función para obtener el historial y dibujar la gráfica
       async function obtenerYDibujarGrafica() {
         try {
           const response = await fetch("/api/obtener_historial");
           const data = await response.json();
-
-          // 'historial' ahora es [{time: "...", value: ...}, ...]
-          const historial = data.historial.reverse(); // Revertimos para que el más antiguo salga primero
-
-          // NUEVO: Función para formatear el timestamp
-          // Convierte "2025-11-12T22:30:00.000Z" a algo legible
-          function formatTimestamp(isoString) {
-            const date = new Date(isoString);
-            // Puedes personalizar este formato
-            return date.toLocaleString("es-MX", {
-              day: "numeric",
-              month: "short",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-            });
-          }
-
-          // NUEVO: Separar el historial en labels (fechas) y values (glucosa)
-          const labels = historial.map((item) => formatTimestamp(item.time));
-          const values = historial.map((item) => item.value);
+          
+          // 'historial' ahora es un array de números: [100, 102, 105]
+          const historial = data.historial.reverse(); // Revertimos
 
           const ctx = document.getElementById("myChart").getContext("2d");
 
@@ -282,13 +266,14 @@ ADAPTACION CELULARES
           }
 
           myChartInstance = new Chart(ctx, {
-            type: "line",
+            type: "line", 
             data: {
-              labels: labels, // Usamos las fechas formateadas
+              // Volvemos a usar "Medición 1, Medición 2..."
+              labels: historial.map((_, index) => `Medición ${index + 1}`), 
               datasets: [
                 {
                   label: "Nivel de Glucosa (mg/dL)",
-                  data: values, // Usamos los valores de glucosa
+                  data: historial, // Los datos del historial (números)
                   borderColor: "rgb(0, 123, 255)",
                   tension: 0.1,
                 },
@@ -313,6 +298,7 @@ ADAPTACION CELULARES
     </script>
   </body>
 </html>
+
 
 
 
