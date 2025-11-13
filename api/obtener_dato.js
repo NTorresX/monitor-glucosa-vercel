@@ -21,8 +21,10 @@ export default async function handler(request, response) {
       nombre: nombrePaciente || '---'
     });
 
-  } catch (error)
+  // ¡AQUÍ ESTABA EL ERROR! Faltaban las llaves { }
+  } catch (error) { 
     return response.status(500).json({ error: error.message });
   }
 }
+
 
